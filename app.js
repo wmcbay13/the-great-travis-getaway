@@ -14,14 +14,27 @@ function syncThemeButton() {
 themeToggle.addEventListener('click', () => { document.body.classList.toggle('dark-mode'); localStorage.setItem('atlantic-theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light'); syncThemeButton(); });
 syncThemeButton();
 
-const days = $('#days'); const style = $('#style');
+const days = $('#days'); const style = $('#style'); const travelers = $('#travelers');
+let currency = 'EUR';
+const eurToUsd = 1.08;
+const money = (amount) => new Intl.NumberFormat(currency === 'EUR' ? 'en-IE' : 'en-US', { style: 'currency', currency, maximumFractionDigits: 0 }).format(currency === 'EUR' ? amount : amount * eurToUsd);
 function updateBudget() {
-  const d = Number(days.value); const s = Number(style.value);
-  const styles = {1:{label:'Value', stay:52, food:38},2:{label:'Mid-range', stay:70, food:55},3:{label:'Boutique', stay:105, food:72}}[s];
-  const stay = Math.round(styles.stay * d); const car = Math.round(275 + Math.max(0,d-7)*24); const food = Math.round(styles.food*d); const activity = Math.round(190 + Math.max(0,d-7)*40); const buffer = Math.max(0,(d-7)*28); const total = stay+car+food+activity+buffer;
-  $('#daysValue').textContent = `${d} days`; $('#styleValue').textContent = styles.label; $('#totalCost').textContent = `€${total.toLocaleString()}`; $('#stayCost').textContent = `€${stay}`; $('#carCost').textContent = `€${car}`; $('#foodCost').textContent = `€${food}`; $('#activityCost').textContent = `€${activity}`; $('#bufferCost').textContent = `€${buffer}`;
+  const d = Number(days.value); const s = Number(style.value); const people = Number(travelers.value);
+  const styles = {1:{label:'Value', room:115, food:42, activities:22},2:{label:'Mid-range', room:175, food:64, activities:34},3:{label:'Boutique', room:295, food:92, activities:54}}[s];
+  const stay = Math.round((styles.room * d) / people);
+  const car = Math.round((350 + (d - 7) * 36) / people);
+  const food = Math.round(styles.food * d);
+  const activity = Math.round(styles.activities * d);
+  const buffer = Math.round((stay + car + food + activity) * .07);
+  const total = stay + car + food + activity + buffer;
+  $('#daysValue').textContent = `${d} days`; $('#travelersValue').textContent = `${people} ${people === 1 ? 'person' : 'people'}`; $('#styleValue').textContent = styles.label;
+  $('#totalCost').textContent = money(total); $('#stayCost').textContent = money(stay); $('#carCost').textContent = money(car); $('#foodCost').textContent = money(food); $('#activityCost').textContent = money(activity); $('#bufferCost').textContent = money(buffer);
+  $('#currencyNote').textContent = currency === 'EUR' ? 'Planning estimate in EUR · excluding international airfare' : `Planning estimate · 1 EUR ≈ ${money(1)} · excluding international airfare`;
+  $('#costFoot').textContent = `Planning ranges only · shared room and compact-car costs divided across ${people} ${people === 1 ? 'person' : 'people'}`;
 }
-days.addEventListener('input', updateBudget); style.addEventListener('input', updateBudget); updateBudget();
+days.addEventListener('input', updateBudget); style.addEventListener('input', updateBudget); travelers.addEventListener('input', updateBudget);
+document.querySelectorAll('[data-currency]').forEach((button) => button.addEventListener('click', () => { currency = button.dataset.currency; document.querySelectorAll('[data-currency]').forEach((item) => item.classList.toggle('active', item === button)); updateBudget(); }));
+updateBudget();
 
 const checks = [...document.querySelectorAll('#checklist input')];
 function updateChecks(){ const done=checks.filter(c=>c.checked).length; $('#checkCount').textContent=done; $('#progressBar').style.width=`${done/checks.length*100}%`; }

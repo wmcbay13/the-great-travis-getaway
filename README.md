@@ -17,7 +17,8 @@ This is a static site with no package installation or build step.
 ├── index.html                         # Page content and semantic structure
 ├── styles.css                         # Base layout, typography, responsive styles
 ├── modern.css                         # Modern visual layer and dark-mode overrides
-├── app.js                             # Budget calculator, checklist, form feedback, theme toggle
+├── enhancements.css                   # Booking gallery and calculator controls
+├── app.js                             # Budget calculator, currency switch, checklist, form feedback, theme toggle
 └── .github/workflows/deploy-pages.yml # GitHub Pages CI/CD workflow
 ```
 
@@ -36,7 +37,7 @@ Most content is in `index.html`:
 - Update the itinerary, accommodation, dining ideas, and reference links directly in the relevant sections.
 - Adjust base colors and typography in `styles.css`.
 - Adjust the contemporary design layer and dark-mode colors in `modern.css`.
-- Change cost-calculation assumptions in `app.js` within `updateBudget()`.
+- Change cost-calculation assumptions or the EUR/USD planning rate in `app.js` within `updateBudget()`.
 
 Because the site is static, GitHub Pages can publish it directly from the repository artifact.
 
